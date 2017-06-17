@@ -1,11 +1,11 @@
 \documentclass[
   master,
-  field=inf,
+%  field=inf,
 %  printversion,
-%  biblatex,
+  biblatex,
 %  language=english,
 %  font=sans,
-%  glossaries,
+  glossaries,
   index
 ]{kidiplom}
 
@@ -29,14 +29,55 @@ The final thesis source code will  be available under terms of GNU/GPLv3 licence
 
 \thanks{Děkuji, děkuji, děkuji.}
 
+\bibliography{bibliography.bib}
+
 \begin{document}
 \maketitle
 
 \noindent\textcolor{red}{\LARGE Upozornění: Následující text je rozpracovaná a (značně) neúplná verze!!!}
 
-\section{Motivace}
+\section{Motivation}
+
+Everyday we enjoy perks of distributed systems. From life like examples like network of independent railway stations with trains as a mean of connection between them to practical computer solutions which are build for various reasons. Of which the scalability, high availability and security would be the most frequent.
+
+I will try to bring some of those use cases closer to reader to show, how important distributed systems are and how crucial is to verify that they are working properly.
 
 \subsection{High availablity}
+
+All users of any service want to have an access to it everytime they wish. Failure of a critical service which would cause its inaccessibility when you need it is not an acceptable scenario in most cases. This implies that we need to know how reliable some service is if we want deploy it to some business critical environment. The degree of this reliability is also called availability.
+
+The simplest definition of average avalability $A$ is proportion of expected uptime (mean time between failures) of some service to sum of expected downtime (mean time to restore) and uptime
+
+$$A=\frac{E(uptime)}{E(uptime) + E(downtime)}$$
+
+this gives us a percentage of time during which system performs its required function\cite{bib:reliability}. In this case it is a time during which the service is available to users.
+
+Provider and user usually agreeds on SLA (service level agreement). There are also specified other aspects of service like quality and responsibilities of contracting parties. Table \ref{table:mttr} shows, how agreed availability varies from values common for cheap web hosting service to critical availability typical for realm time systems. Such promised availability is also called {\bf high availability}.
+
+To achieve such availability, multiple approaches are being used. The main one is redundancy. Redundancy in harware is the easiest way how to achieve one. Redundant power supply, redundant storage (e.g. RAID) etc. It just won't help when that one machine blows its single point of failure which is usually mother board. In that case it is clear we need multiple machines working as service providers. Nodes, which would run the same code, providing the exact same service.
+
+There is now multiple nodes providing same service, but how to control to which one users connect without breaking their comfort? We need a top layer mechanism in infrastructure to take the control over "redirection" of users requests (which is very simplified) and detecting failures in lower layer. Although this mechanism becomes new single point of failure and evade this may be challenging, it makes the whole system more reliable. %TODO citation needed.
+
+\begin{table}[]
+\centering
+\begin{tabular}{lcccc}
+Availability & MMTR/year  & MTTR/month & MTTR/week & MTTR/day  \\ \hline
+90           & 36.5 d     & 72 h       & 16.8 h    & 2.4 h     \\
+99           & 3.65 d     & 7.2 h      & 1.68 h    & 14.4 m    \\
+99.5         & 1.83 d     & 3.6 h      & 50.4 m    & 7.2 m     \\
+99.9         & 8.76 h     & 43.8 m     & 10.1 m    & 1.44 m    \\
+99.99        & 52.56 m    & 4.38 m     & 1.01 m    & 8.64 s    \\
+99.999       & 5.26 m     & 25.9 s     & 6.05 s    & 864.3 ms  \\
+99.9999      & 31.5 s     & 2.59 s     & 604.8 ms  & 86.4 ms   \\
+99.99999     & 3.15 s     & 262.97 ms  & 60.48 ms  & 8.64 ms   \\
+99.999999    & 315.569 ms & 26.297 ms  & 6.048 ms  & 0.864 ms  \\
+99.9999999   & 31.5569 ms & 2.6297 ms  & 0.6048 ms & 0.0864 ms
+\end{tabular}
+\caption{Ilustration of system downtimes based on availability agreed in SLA}
+\label{table:mttr}
+\end{table}
+
+
 %TODO material z prezentace CSCI
 \subsection{Load balancing}
 %TODO material z prezentace CSCI
@@ -53,5 +94,6 @@ The final thesis source code will  be available under terms of GNU/GPLv3 licence
 
 \section{Cíl práce}
 
+\printbibliography
 
 \end{document}
