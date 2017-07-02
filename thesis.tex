@@ -77,15 +77,25 @@ Availability & MMTR/year  & MTTR/month & MTTR/week & MTTR/day  \\ \hline
 \label{table:mttr}
 \end{table}
 
-
-%TODO material z prezentace CSCI
 \subsection{Load balancing}
-%TODO material z prezentace CSCI
-\subsection{Ověření funkčnosti}
 
-\subsection{Distribuované systémy kolem nás}
+This kind of mechanism is called {\bf load balancer}, since it distributes workload between redundant nodes in cluster. It must be also said that this load balancer needs to detect failures of individual nodes and stop redirecting to those which fail.
 
-\subsubsection{Virtualizace na úrovni OS}
+%TODO picture here (load balancer proxy, workers, client)
+
+I will give an example of such load balancers. The simplest way of load balancing is DNS based load balancing. When DNS server responds to client with an IP address of target server, the DNS server usually sends a list of IP addresses and client chooses the first. This method relies on rotating those addresses on round-robin base, so each different client will use different IP address to connect to the server. This way has one major issue. It cannot detect any failures of a network or a server. The second problem is, that the DNS reponds are cached. That means, that a lot of clients eventually will use the same IP address, since order of addresses in list won't change. %TODO literature - Practical Load Balancing
+
+Another common example of load balancer is FastCGI based web servers. Such servers run several reusable instances of same CGI script and it is decided to which instance will be a request send.
+
+And last but not least is HTTP load balancer. Verifying funcionality of such load balancer is very complex and is main motivation for my thesis. %TODO more about HTTP load balancer, mod_cluster mentioning?
+
+\subsection{Everyday life distributed systems}
+
+Although verifying the correct funcionality of a load balancer is very important, there are other use cases when confirming precise funcionality of a distributed system is crucial. Such systems are more and more common since they are much easier to scale. In distributed system, when more power is needed, the only thing which has to be done is add an other new node. %TODO more general talk about distributed systems
+
+\subsubsection{Operating-system-level virtualization}
+
+So called containers or less likely heard words written in the heading are isolated instances of operating systems kernels running in user-space. Due to the fact that for the programs running inside them is their environment almost unrecognizable from real environment, are such containers used commonly for virtualization hosting. When comes to security, containers comes handy to, because it is possible to isolate applications in them too.
 
 \subsubsection{Cloud}
 
