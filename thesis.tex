@@ -79,13 +79,44 @@ Availability & MMTR/year  & MTTR/month & MTTR/week & MTTR/day  \\ \hline
 
 \subsection{Load balancing}
 
-This kind of mechanism is called {\bf load balancer}, since it distributes workload between redundant nodes in cluster. It must be also said that this load balancer needs to detect failures of individual nodes and stop redirecting to those which fail.
+This kind of mechanism is called {\bf load balancer}, since it distributes workload between redundant nodes in cluster. It must be also said that this load balancer needs to detect failures of individual nodes and stop redirecting to those which fail. Verifying funcionality of such load balancer is very complex and is main motivation for my thesis. I will now introduce several examples of load balancers.
 
 %TODO picture here (load balancer proxy, workers, client)
 
-I will give an example of such load balancers. The simplest way of load balancing is DNS based load balancing. When DNS server responds to client with an IP address of target server, the DNS server usually sends a list of IP addresses and client chooses the first. This method relies on rotating those addresses on round-robin base, so each different client will use different IP address to connect to the server. This way has one major issue. It cannot detect any failures of a network or a server. The second problem is, that the DNS reponds are cached. That means, that a lot of clients eventually will use the same IP address, since order of addresses in list won't change. %TODO literature - Practical Load Balancing
+\subsubsection{DNS load balancer}
 
-Another common example of load balancer is FastCGI based web servers. Such servers run several reusable instances of same CGI script and it is decided to which instance will be a request send.
+The simplest way of load balancing is DNS based load balancing. If you are familiar with Domain Name Service, you can skip following two paragraphs which introduce reader into the matter.
+
+The main purpose of DNS is to associate IP address with a hostname. A hostname, which is far more rememberable for human being than, in a worst case, a sequence of hexadecimal symbols divided by colons. When user initites a basic command \kiinlinecode{}{!}{ping} with a hostname as an argument, a program called \kiinlinecode{}{!}{resolver} takes over. For the purpose of an example, all caches will be omitted and the hostname will be \kiinlinecode{}{!}{upol.cz}. The \kiinlinecode{}{!}{resolver} first asks DNS server configured in operating systems, if it knows the IP address of \kiinlinecode{}{!}{upol.cz}. It probably doesn't, but it provides resolver with an address of someone who could -- the root server. \kiinlinecode{}{!}{resolver} asks root server for the address, but it doesn't know it. It only knows who could know it -- the server responsible for \kiinlinecode{}{!}{cz} domain and provides resolver with its address. It sends query to that server once again, asking, who is reponsible for \kiinlinecode{}{!}{upol.cz} domain. After receiving an answer, the \kiinlinecode{}{!}{resolver} sends a final query to that address recieving response like shown in source code \ref{code:dig-upolcz}.
+
+\begin{kicode}{}{code:dig-upolcz}{Answer section of output from dig upol.cz command}
+;; ANSWER SECTION:
+upol.cz.		86022	IN	A	158.194.230.95
+\end{kicode}
+
+Note that the response in source code one provides just one address for \kiinlinecode{}{!}{upol.cz} domain, since this will be subject of further explanation. This is just a short introduction to DNS and it definitely doesn't cover all shortcomings and corner cases.
+
+DNS load balancing is round-robin based. With appropriate DNS server configuration, the answer recieved by \kiinlinecode{}{!}{resolver} looks like the one in source code \ref{code:dig-infupolcz}. There are multiple IP addresses assigned for one hostname. The resolver usually picks the first and the DNS server rotates these addresses in every response so the traffic is equally distributed.
+
+\begin{kicode}{}{code:dig-infupolcz}{Answer section of output from dig inf.upol.cz command}
+;; ANSWER SECTION:
+inf.upol.cz.		86400	IN	A	158.194.92.6
+inf.upol.cz.		86400	IN	A	158.194.80.18
+\end{kicode}
+
+Although the principle of this simple system sound great, it really doesn't work so well. The main issue is caching. In DNS, almost everything is cached with various expiration time anywhere between few days to a week. This causes the fact, that lot of clients which queries DNS server with cached queries within expiration interval, recieves same response. Thus they will try to connect to the same server which can put a significant load on it.
+
+This solution also cannot detect any failures of servers which addresses it provides. There is no protocol for a talk between DNS server and host, so there is no way for DNS server how to find out that the host is not alive anymore \cite{bib:slb}\cite{bib:practicallb}.
+
+\subsubsection{Content delivery network}
+
+Important factor which influences response time of target host is its geographic location in relation to client. CDN or more archaical term Global server load balancing\cite{bib:slb} relies on fact, that the closer the host is to the client, the faster is response from the host from the client's point of view. Not only response can be faster. If the host and client are in the same wider network, the client can usually access to the host on a connection with higher bandwidth, thus downloading content faster\cite{bib:practicallb}.
+
+From historical point of view, in times, when connection was priced by bytes transfered, the internet service providers (ISPs) tried to find a way how to save money by transfering less data through foreign networks. The solution was quite simple and efficient. The ISPs established a mirror (usually a FTP server) of often downloaded large files from those networks and provided it to its clients. This was beneficial for both sides. ISPs saved money and client downloaded desired file faster.
+
+As it was already said, the basis of this system stands on servers in various geographic locations which mirrors their content. As of present, you can pay for service proving funcionality of CDN and use it for static content of your website since building network like this can be and in fact is very expensive.
+
+\subsubsection{HTTP load balancing}
 
 And last but not least is HTTP load balancer. Verifying funcionality of such load balancer is very complex and is main motivation for my thesis. %TODO more about HTTP load balancer, mod_cluster mentioning?
 
