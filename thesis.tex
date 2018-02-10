@@ -9,6 +9,8 @@
   index
 ]{kidiplom}
 
+\usepackage{tabularx}
+
 \title{Platformově nezávislý masivně paralelní distribuovaný testovací framework}
 \title[english]{Platform agnostic massively parallel distributed testing framework}
 
@@ -104,7 +106,7 @@ inf.upol.cz.		86400	IN	A	158.194.92.6
 inf.upol.cz.		86400	IN	A	158.194.80.18
 \end{kicode}
 
-Although the principle of this simple system sound great, it really doesn't work so well. The main issue is caching. In DNS, almost everything is cached with various expiration time anywhere between few days to a week. This causes the fact, that lot of clients which queries DNS server with cached queries within expiration interval, recieves same response. Thus they will try to connect to the same server which can put a significant load on it.
+Although the principle of this simple system sounds great, it really doesn't work so well. The main issue is caching. In DNS, almost everything is cached with various expiration time anywhere between few days to a week. This causes the fact, that lot of clients which queries DNS server with cached queries within expiration interval, recieve same response. Thus they will try to connect to the same server which can put a significant load on it.
 
 This solution also cannot detect any failures of servers which addresses it provides. There is no protocol for a talk between DNS server and host, so there is no way for DNS server how to find out that the host is not alive anymore \cite{bib:slb}\cite{bib:practicallb}.
 
@@ -115,10 +117,6 @@ Important factor which influences response time of target host is its geographic
 From historical point of view, in times, when connection was priced by bytes transfered, the internet service providers (ISPs) tried to find a way how to save money by transfering less data through foreign networks. The solution was quite simple and efficient. The ISPs established a mirror (usually a FTP server) of often downloaded large files from those networks and provided it to its clients. This was beneficial for both sides. ISPs saved money and client downloaded desired file faster.
 
 As it was already said, the basis of this system stands on servers in various geographic locations which mirrors their content. As of present, you can pay for service proving funcionality of CDN and use it for static content of your website since building network like this can be and in fact is very expensive.
-
-\subsubsection{HTTP load balancing}
-
-And last but not least is HTTP load balancer. Verifying funcionality of such load balancer is very complex and is main motivation for my thesis. %TODO more about HTTP load balancer, mod_cluster mentioning?
 
 \subsection{Everyday life distributed systems}
 
@@ -135,6 +133,40 @@ Cloud computing based on lending out the server resources is another popular ter
 \subsubsection{Microservices}
 
 Running pieces of code which are loosely connected between each other. A server oriented architecture which promotes writing applications how they should be really written -- modularized, independent and reusable chunks. %TODO - more text
+
+\subsection{mod\_cluster}
+
+%TODO - this probably belongs under HTTP load balancing
+
+The initial comes for this thesis comes from need to test mod\_cluster -- a HTTP based load balancer. As I made introduction to load balanciong before, now I will only make few notes about mod\_cluster and its versaility.
+
+First, let's introduce some neccassary terminology. Client in following text is an end user, who wants to profit from working load balancing. Balancer is a network node which performs load balancing. Worker is a network node which consumes client's requests and generates responses -- often an application server with deployed application. %TODO - often?? [citation needed]
+
+mod\_cluster uses own set of HTTP methods, often called mod\_cluster management protocol (MCMP)\cite{bib:modcluster}, to establish communication between workers and balancer. This channel can be used to transmit load balance factors and application lifecycle events from workers to balancer.
+
+Over other HTTP based load balancers, mod\_cluster has following advantages:
+
+Application life cycle control. Most of other solutions cannot distinguish between request for undeployed application from application server and request for non-existent resource. In both cases, this kind of request ends up with a 404 HTTP response code. In mod\_cluster load balancing environment, workers forwards to balancer application lifecycle events like deploy and undeploy. The balancer then know when it can stop or start routing requests to that worker.\cite{bib:modcluster}
+
+Worker side load balance factor calculation. Traditional HTTP based solution calculate load balance factors on balancer on balancer node. In mod\_cluster environment, these factors are calculated and provided by worker nodes.\cite{bib:modcluster}
+
+Dynamic worker configuration. %TODO
+
+%TODO - complete HAproxy
+\begin{table}[]
+\centering
+\caption{Comparsion of various load balancers}
+\label{my-label}
+\begin{tabularx}{\linewidth}{X|cccc}
+                                        & NGINX                             & mod\_cluster              & mod\_jk          & HAproxy \\ \hline
+Dynamic worker configuration            & no\cite{bib:nginxlb}              & yes\cite{bib:modcluster}  & no               &         \\
+Load balancer factor provided by worker & no\cite{bib:nginxlb}              & yes\cite{bib:modcluster}  & N/A\footnotemark &         \\
+Application life cycle control          & no\footnotemark\cite{bib:nginxlb} & yes\cite{bib:modcluster}  & no               &
+\end{tabularx}
+\end{table}
+\footnotetext{There is no load balancer factor in mod\_jk load balancing}
+\footnotetext{It however looks for server's health\cite{bib:nginxlb}}
+
 
 \section{The output of my work}
 
