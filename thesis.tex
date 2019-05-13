@@ -135,7 +135,11 @@ Although verifying the correct funcionality of a load balancer is very important
 
 \subsubsubsection{Operating-system-level virtualization}
 
-So called containers or less likely heard words written in the heading are isolated instances of operating systems kernels running in user-space. Due to the fact that for the programs running inside them is their environment almost unrecognizable from real environment, are such containers used commonly for virtualization hosting. When comes to security, containers comes handy to, because it is possible to isolate applications in them too. %TODO - more complex use cases, more introduction, concrete technology solutions mentioning?
+So called containers or less likely heard words written in the heading are isolated instances of operating systems kernels running in user-space. Due to the fact that for the programs running inside them is their environment almost unrecognizable from real environment, are such containers used commonly for virtualization hosting. When comes to security, containers comes handy to, because it is possible to isolate applications in them too. 
+
+%TODO - more complex use cases, more introduction, concrete technology solutions mentioning?
+
+%TODO - Docker vs containers (terminology), podman
 
 \subsubsubsection{Cloud}
 
@@ -183,8 +187,35 @@ Application life cycle control          & no\footnotemark\cite{bib:nginxlb} & ye
 \subsection{OpenShift and degraded network testing}
 
 %TODO why there is even another problem?
-%TODO introduction to 2nd day testing
+
+\subsubsection{Second day testing}
+
+What will happen with system when it will be running not just for the usual period testsuite runs but a day, two days, week, months? There might be memory leaks, stack overflow errors.
+
+We touch the reliability here again. Since we want all systems to be reliable and we must ensure it.
+
+%TODO mention a bug where the uptime on CPU caused the issue.
+
+%TODO introduction to 2nd day testing, relation to soak testing
+
+\subsubsection{Failover testing}
+
+Does system recover after it or its part fails? This it the question failover testing tries to answer.
+
+If one of replicated nodes in load balancing scenario fails, will be requests still processed correctly by rest of nodes? Will a storage service recover in case of its crash? Will failback\footnote{Process of restoring an application/system into working state.} work correctly in case of such failure?
+
+Since everyone who writes an application wants to be sure that it will be reliable, they need to introduce this kind of tests into their test suites.
+
 %TODO introduction to Failover testing
+
+\subsubsection{Imperfect test environment}
+
+Usual test scenarios run in perfect test environment -- we usually want stable, perfectly running test environment with no other load than the one produced by our tests.
+
+The world is not ideal and the underlying system may fall into harsh condition and environment will not be perfect at all.
+
+It should be possible to simulate such imperfect environment to get closer to users needs. We want to know how will the application/system perform and how this will affect its funcionality and/or performance.
+
 %TODO Testing is always made in perfect environment - how will the application behave if environment is not perfect (degraded network)?
 
 \subsection{OpenShift, Kubernetes and containers}
@@ -193,7 +224,7 @@ Application life cycle control          & no\footnotemark\cite{bib:nginxlb} & ye
 
 \subsection{User focused testing}
 
-Needs of performance testing for mod_cluster faded away as I was transitioned to work on OpenShift. We focus more and more on user issues and run of systems in imperfect environment came to my sight.
+Needs of performance testing for mod\_cluster faded away as I was transitioned to work on OpenShift. We focus more and more on user issues and run of systems in imperfect environment came to my sight.
 
 %TODO explain user docused testing more. Why are these scenarios important?
 
@@ -202,6 +233,10 @@ Needs of performance testing for mod_cluster faded away as I was transitioned to
 \subsection{Openshift/Kubernetes automation}
 
 %TODO introduction to: sunstone, jclouds, xft-cz
+
+\subsubsection{Sunstone and jclouds}
+
+\subsubsection{xft-cz}
 
 \subsection{Traffic control}
 
