@@ -238,6 +238,31 @@ Needs of performance testing for mod\_cluster faded away as I was transitioned t
 
 \subsubsection{xft-cz}
 
+\subsubsection{oVirt installation}
+
+Since the only machine which I had available for my tests was my home-built workstation featuring two Intel Xeon E5520 CPUs and 64 GB DDR3 RAM I had to somehow used its potentional for installing OpenShift which requires several machine (I will return to this topic later).
+
+After bit of research it was clear I needed a hypervisor. First thing which came to my mind was Xen hypervisor. Then, again, I did little bit of research and I settlet with oVirt. Here's why: %TODO.
+
+First, it is important to udnerstand the concept. There are several terms in oVirt namespace which are important:
+
+\begin{description}
+  \item [Engine] %TODO
+  \item [Host] %TODO
+  \item [Node] %TODO
+\end{description}
+
+In my case I needed a hardware and a software. You can use two classes of base OS:
+
+\begin{itemize}
+  \item oVirt node -- minimal distribution of CentOS based on el7
+  \item CentOS/RHEL OS -- You can install oVirt through RPMs
+
+
+\subsubsection{OpenShift (OKD) installation}
+
+There are ways how to have single-host OpenShift environment (e.g. Minishift), but I needed more real-like one, so the installation was inevitable.
+
 \subsection{Traffic control}
 
 %TODO introduce traffic control daemon
